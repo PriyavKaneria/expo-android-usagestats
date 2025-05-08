@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android", "web"],
+  "apple": {
+    "modules": ["ExpoAndroidUsagestatsModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.androidusagestats.ExpoAndroidUsagestatsModule"]
+  }
+}
