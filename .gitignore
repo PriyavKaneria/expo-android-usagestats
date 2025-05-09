@@ -45,6 +45,7 @@ example/ios/Pods
 
 # Ruby
 example/vendor/
+testapp/android
 
 # node.js
 #
