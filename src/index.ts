@@ -1,10 +1,8 @@
 import ExpoAndroidUsagestats from "./ExpoAndroidUsagestatsModule"
 import {
-	getUsageStatsForLastDays,
-	getTodayUsageStats,
-	getThisWeekUsageStats,
-	getUsageEventsForLastDays,
-	getMonthlyUsageStats,
+	getUsageStats,
+	getUsageEvents,
+	getAggregatedUsageStats,
 } from "./ExpoAndroidUsagestatsModule"
 
 export {
@@ -18,9 +16,7 @@ export {
 
 export {
 	ExpoAndroidUsagestats as default,
-	getUsageStatsForLastDays,
-	getTodayUsageStats,
-	getThisWeekUsageStats,
-	getUsageEventsForLastDays,
-	getMonthlyUsageStats,
+	getUsageStats,
+	getUsageEvents,
+	getAggregatedUsageStats,
 }

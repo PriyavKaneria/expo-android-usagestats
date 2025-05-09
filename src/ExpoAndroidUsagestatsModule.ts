@@ -9,69 +9,44 @@ import {
  */
 const ExpoAndroidUsagestats: ExpoAndroidUsagestatsInterface =
 	requireNativeModule("ExpoAndroidUsagestats")
+  
+  /**
+   * Helper method to get usage stats for a specific time period
+   * @param startDate Start date in milliseconds
+   * @param endDate End date in milliseconds
+   * @returns Promise<UsageStats[]> - Array of usage stats objects
+   */
+  export async function getUsageStats(startDate: number, endDate: number) {
+    return await ExpoAndroidUsagestats.getUsageStats(startDate, endDate)
+  }
+  
+  /**
+   * Helper method to get usage events for a specific time period
+   * @param startDate Start date in milliseconds
+   * @param endDate End date in milliseconds
+   * @returns Promise<UsageEvent[]> - Array of usage stats objects
+   */
+  export async function getUsageEvents(startDate: number, endDate: number) {
+    return await ExpoAndroidUsagestats.getUsageEvents(startDate, endDate)
+  }
 
-/**
- * Helper method to get usage stats for a specific time period
- * @param days Number of days to look back
- * @returns Promise<UsageStats[]> - Array of usage stats objects
- */
-export async function getUsageStatsForLastDays(days: number) {
-	const endTime = Date.now()
-	const startTime = endTime - days * 24 * 60 * 60 * 1000 // days to milliseconds
-	return await ExpoAndroidUsagestats.getUsageStats(startTime, endTime)
-}
-
-/**
- * Helper method to get usage stats for today
- * @returns Promise<UsageStats[]> - Array of usage stats objects
- */
-export async function getTodayUsageStats() {
-	const endTime = Date.now()
-	const startTime = new Date().setHours(0, 0, 0, 0) // Start of today
-	return await ExpoAndroidUsagestats.getUsageStats(startTime, endTime)
-}
-
-/**
- * Helper method to get usage stats for this week
- * @returns Promise<UsageStats[]> - Array of usage stats objects
- */
-export async function getThisWeekUsageStats() {
-	const endTime = Date.now()
-	const now = new Date()
-	const dayOfWeek = now.getDay()
-	const startOfWeek = new Date(now)
-	startOfWeek.setDate(now.getDate() - dayOfWeek)
-	startOfWeek.setHours(0, 0, 0, 0)
-	return await ExpoAndroidUsagestats.getUsageStats(
-		startOfWeek.getTime(),
-		endTime
-	)
-}
-
-/**
- * Helper method to get usage events for a specific time period
- * @param days Number of days to look back
- * @returns Promise<UsageEvent[]> - Array of usage event objects
- */
-export async function getUsageEventsForLastDays(days: number) {
-	const endTime = Date.now()
-	const startTime = endTime - days * 24 * 60 * 60 * 1000 // days to milliseconds
-	return await ExpoAndroidUsagestats.getUsageEvents(startTime, endTime)
-}
-
-/**
- * Helper method to get monthly usage stats
- * @param months Number of months to look back
- * @returns Promise<UsageStats[]> - Array of usage stats objects
- */
-export async function getMonthlyUsageStats(months: number = 1) {
-	const endTime = Date.now()
-	const startTime = endTime - months * 30 * 24 * 60 * 60 * 1000 // approximate months to milliseconds
-	return await ExpoAndroidUsagestats.getAggregatedUsageStats(
-		startTime,
-		endTime,
-		UsageStatsIntervalType.INTERVAL_MONTHLY
-	)
-}
+  /**
+   * Helper method to get aggregated usage stats for a specific time period and interval
+   * @param startDate Start date in milliseconds
+   * @param endDate End date in milliseconds
+   * @param interval Interval type (e.g., daily, weekly, monthly)
+   * @returns Promise<UsageStats[]> - Array of aggregated usage stats objects
+   */
+  export async function getAggregatedUsageStats(
+    startDate: number,
+    endDate: number,
+    interval: UsageStatsIntervalType
+  ) {
+    return await ExpoAndroidUsagestats.getAggregatedUsageStats(
+      startDate,
+      endDate,
+      interval
+    )
+  }
 
 export default ExpoAndroidUsagestats

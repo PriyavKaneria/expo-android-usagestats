@@ -7,8 +7,9 @@ import { ThemedText } from "@/components/ThemedText"
 import { ThemedView } from "@/components/ThemedView"
 
 import ExpoAndroidUsagestats, {
-	getTodayUsageStats,
-	getUsageEventsForLastDays,
+	getUsageStats,
+	getAggregatedUsageStats,
+	UsageStatsIntervalType,
 } from "expo-android-usagestats"
 import { useEffect } from "react"
 
@@ -20,8 +21,17 @@ export default function HomeScreen() {
 			if (!hasPermission) {
 				await ExpoAndroidUsagestats.requestUsageStatsPermission()
 			} else {
-				console.log(getTodayUsageStats())
-				console.log(getUsageEventsForLastDays(1))
+				const now = new Date()
+				const yesterday = new Date()
+				yesterday.setDate(yesterday.getDate() - 1)
+				console.log(await getUsageStats(yesterday.getTime(), now.getTime()))
+				console.log(
+					await getAggregatedUsageStats(
+						yesterday.getTime(),
+						now.getTime(),
+						UsageStatsIntervalType.INTERVAL_BEST
+					)
+				)
 			}
 		})()
 	}, [])
