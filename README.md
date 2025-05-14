@@ -67,6 +67,18 @@ async function requestUsageStatsPermission(): Promise<null>
 
 ---
 
+### `getInstalledApps()`
+
+Retrieves a list of all installed apps.
+
+```ts
+async function getInstalledApps(): Promise<AppInfo[]>
+```
+
+**Returns**: A promise that resolves to an array of `AppInfo` objects.
+
+---
+
 ### `getUsageStats(startTime: number, endTime: number)`
 
 Retrieves usage statistics for all apps within a specified time range.
@@ -121,6 +133,21 @@ async function getAggregatedUsageStats(
 ---
 
 ## Types
+
+### `AppInfo`
+
+Represents information about an installed app.
+
+```ts
+interface AppInfo {
+  packageName: string
+  appName: string
+  icon: string
+  category: string
+}
+```
+
+---
 
 ### `UsageStats`
 

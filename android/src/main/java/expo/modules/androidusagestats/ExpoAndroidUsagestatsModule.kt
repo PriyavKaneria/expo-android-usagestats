@@ -5,8 +5,16 @@ import android.app.usage.UsageStats
 import android.app.usage.UsageStatsManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
+import android.os.Build
 import android.provider.Settings
 import android.util.Log
+import android.util.Base64
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
+import android.content.pm.ApplicationInfo
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.modules.Module
@@ -14,6 +22,7 @@ import expo.modules.kotlin.exception.CodedException
 import java.lang.Exception
 import expo.modules.kotlin.modules.ModuleDefinition
 import java.util.*
+import java.io.ByteArrayOutputStream
 
 class ExpoAndroidUsagestatsModule : Module() {
   private val context
@@ -38,6 +47,42 @@ class ExpoAndroidUsagestatsModule : Module() {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
         promise.resolve(null)
+      } catch (e: Exception) {
+        promise.reject(CodedException("OPERATION_FAILED", "Details about the failure", e))
+      }
+    }
+
+    AsyncFunction("getInstalledApps") { promise: Promise ->
+      try {
+        // searching main activities labeled to be launchers of the apps
+        val pm = context.packageManager
+        val mainIntent = Intent(Intent.ACTION_MAIN, null)
+        mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
+
+        val resolvedInfos = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            pm.queryIntentActivities(
+                mainIntent,
+                PackageManager.ResolveInfoFlags.of(0L)
+            )
+        } else {
+            pm.queryIntentActivities(mainIntent, 0)
+        }
+        promise.resolve(resolvedInfos.map { it.activityInfo.packageName })
+      } catch (e: Exception) {
+        promise.reject(CodedException("OPERATION_FAILED", "Details about the failure", e))
+      }
+    }
+
+    AsyncFunction("getAppInfo") { packageName: String, promise: Promise ->
+      try {
+        val appInfo = context.packageManager.getApplicationInfo(packageName, 0)
+        // val icon = appInfo.getIconResoir(context.packageManager)
+        promise.resolve(mapOf(
+          "packageName" to appInfo.packageName,
+          "appName" to appInfo.loadLabel(context.packageManager).toString(),
+          "icon" to "",
+          "category" to ApplicationInfo.getCategoryTitle(context, appInfo.category)
+        ))
       } catch (e: Exception) {
         promise.reject(CodedException("OPERATION_FAILED", "Details about the failure", e))
       }
@@ -117,6 +162,24 @@ class ExpoAndroidUsagestatsModule : Module() {
     val stats = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000 * 60, time)
     return stats.isNotEmpty()
   }
+
+  private fun encodeIcon(icon: Drawable): String {
+    var appIcon64: String? = null
+    if (icon == null) {
+      return ""
+    }
+    val outputStream = ByteArrayOutputStream() 
+
+    val bitDw = (icon as BitmapDrawable)
+    val bitmap = bitDw.bitmap 
+    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+    val bitmapByte = outputStream.toByteArray()
+
+    appIcon64 = Base64.encodeToString(bitmapByte, Base64.DEFAULT)
+
+    return appIcon64
+  }
+
 
   private fun mapUsageStats(usageStats: UsageStats): Map<String, Any?> {
     return mapOf(

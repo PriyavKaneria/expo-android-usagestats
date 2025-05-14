@@ -6,20 +6,22 @@ import ParallaxScrollView from "@/components/ParallaxScrollView"
 import { ThemedText } from "@/components/ThemedText"
 import { ThemedView } from "@/components/ThemedView"
 
-import ExpoAndroidUsagestats, {
+import {
 	getUsageStats,
 	getAggregatedUsageStats,
 	UsageStatsIntervalType,
+	getInstalledApps,
+	hasUsageStatsPermission,
+	requestUsageStatsPermission,
 } from "expo-android-usagestats"
 import { useEffect } from "react"
 
 export default function HomeScreen() {
 	useEffect(() => {
 		;(async () => {
-			const hasPermission =
-				await ExpoAndroidUsagestats.hasUsageStatsPermission()
+			const hasPermission = await hasUsageStatsPermission()
 			if (!hasPermission) {
-				await ExpoAndroidUsagestats.requestUsageStatsPermission()
+				await requestUsageStatsPermission()
 			} else {
 				const now = new Date()
 				const yesterday = new Date()
@@ -32,6 +34,8 @@ export default function HomeScreen() {
 						UsageStatsIntervalType.INTERVAL_BEST
 					)
 				)
+				console.log("called getInstalledApps")
+				console.log("installed apps", await getInstalledApps())
 			}
 		})()
 	}, [])

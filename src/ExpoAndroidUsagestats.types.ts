@@ -79,6 +79,16 @@ export interface UsageEvent {
 	shortcutId?: string // API 28+ (Android P)
 }
 
+/**
+ * Interface for AppInfo object
+ */
+export interface AppInfo {
+	packageName: string
+	appName: string
+	icon: string
+	category: string
+}
+
 export interface ExpoAndroidUsagestatsInterface {
 	/**
 	 * Check if the app has permission to access usage stats
@@ -91,6 +101,19 @@ export interface ExpoAndroidUsagestatsInterface {
 	 * @returns Promise<null>
 	 */
 	requestUsageStatsPermission(): Promise<null>
+
+	/**
+	 * Get all installed apps
+	 * @returns Promise<string[]> - Array of package names
+	 */
+	getInstalledApps(): Promise<string[]>
+
+	/**
+	 * Get app info for a specific package name
+	 * @param packageName The package name of the app
+	 * @returns Promise<AppInfo> - App info object
+	 */
+	getAppInfo(packageName: string): Promise<AppInfo>
 
 	/**
 	 * Get usage stats for all apps within a time range
